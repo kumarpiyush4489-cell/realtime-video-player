@@ -36,6 +36,7 @@ const liveText = document.getElementById("liveText");
 const hindiText = document.getElementById("hindiText");
 
 let recognition;
+let lastSpoken = "";
 
 btn.addEventListener("click", async () => {
   if (video.paused) {
@@ -43,7 +44,10 @@ btn.addEventListener("click", async () => {
     return;
   }
 
-  // Audio Context (browser requirement)
+  // Lower original volume (demo dubbing effect)
+  video.volume = 0.2;
+
+  // Audio Context
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
   await audioContext.resume();
@@ -56,7 +60,7 @@ btn.addEventListener("click", async () => {
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
   recognition = new SpeechRecognition();
-  recognition.lang = "ja-JP"; // Japanese
+  recognition.lang = "ja-JP";
   recognition.continuous = true;
   recognition.interimResults = true;
 
@@ -68,7 +72,7 @@ btn.addEventListener("click", async () => {
 
     liveText.innerText = transcript;
 
-    // Demo Japanese → Hindi mapping (FREE)
+    // Demo JP → HI dictionary
     const hindiMap = {
       "こんにちは": "नमस्ते",
       "ありがとう": "धन्यवाद",
@@ -83,13 +87,27 @@ btn.addEventListener("click", async () => {
     });
 
     hindiText.innerText = translated;
+
+    // Speak Hindi (avoid repeating same line)
+    if (translated && translated !== lastSpoken) {
+      speakHindi(translated);
+      lastSpoken = translated;
+    }
   };
 
   recognition.start();
-
   status.innerText =
-    "Status: ✅ Audio capture + Japanese speech recognition ACTIVE";
+    "Status: ✅ Audio capture + Japanese STT + Hindi Voice ACTIVE";
 });
+
+function speakHindi(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "hi-IN";
+  utterance.rate = 1;
+  utterance.pitch = 1;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
 </script>
 
 </body>
