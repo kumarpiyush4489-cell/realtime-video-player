@@ -13,21 +13,31 @@
 
 <br><br>
 
-<button onclick="startAudio()">Start Audio Capture</button>
+<button id="btn">Start Audio Capture</button>
 
 <p id="status">Status: Waiting</p>
 
 <script>
-function startAudio() {
-  const video = document.getElementById("video");
+const btn = document.getElementById("btn");
+const status = document.getElementById("status");
+const video = document.getElementById("video");
 
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+btn.addEventListener("click", async () => {
+  if (video.paused) {
+    alert("⚠️ Pehle video PLAY karo, phir button dabao");
+    return;
+  }
+
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const audioContext = new AudioContext();
+
+  await audioContext.resume();
+
   const source = audioContext.createMediaElementSource(video);
   source.connect(audioContext.destination);
 
-  document.getElementById("status").innerText =
-    "Status: Audio capture WORKING (Ready for AI)";
-}
+  status.innerText = "Status: ✅ Audio capture ACTIVE (AI ready)";
+});
 </script>
 
 </body>
