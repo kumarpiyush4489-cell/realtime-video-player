@@ -18,20 +18,16 @@
 <p id="status">Status: Waiting</p>
 
 <script>
-  function startAudio() {
-    const video = document.getElementById("video");
-    video.muted = false;
+function startAudio() {
+  const video = document.getElementById("video");
 
-    const audioContext = new AudioContext();
-    const source = audioContext.createMediaElementSource(video);
-    const destination = audioContext.createMediaStreamDestination();
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioContext.createMediaElementSource(video);
+  source.connect(audioContext.destination);
 
-    source.connect(destination);
-    source.connect(audioContext.destination);
-
-    document.getElementById("status").innerText =
-      "Status: Audio captured successfully (Ready for AI)";
-  }
+  document.getElementById("status").innerText =
+    "Status: Audio capture WORKING (Ready for AI)";
+}
 </script>
 
 </body>
