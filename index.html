@@ -7,11 +7,32 @@
 
 <h2>AI Video Player (Prototype)</h2>
 
-<video controls width="600">
+<video id="video" controls width="600">
   <source src="sample.mp4" type="video/mp4">
 </video>
 
-<p>Future feature: Real-time Japanese → Hindi voice</p>
+<br><br>
+
+<button onclick="startAudio()">Start Audio Capture</button>
+
+<p id="status">Status: Waiting</p>
+
+<script>
+  function startAudio() {
+    const video = document.getElementById("video");
+    video.muted = false;
+
+    const audioContext = new AudioContext();
+    const source = audioContext.createMediaElementSource(video);
+    const destination = audioContext.createMediaStreamDestination();
+
+    source.connect(destination);
+    source.connect(audioContext.destination);
+
+    document.getElementById("status").innerText =
+      "Status: Audio captured successfully (Ready for AI)";
+  }
+</script>
 
 </body>
 </html>
