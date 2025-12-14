@@ -22,23 +22,43 @@ const btn = document.getElementById("btn");
 const status = document.getElementById("status");
 const video = document.getElementById("video");
 
+let recognition;
+
 btn.addEventListener("click", async () => {
   if (video.paused) {
     alert("⚠️ Pehle video PLAY karo, phir button dabao");
     return;
   }
 
+  // Audio capture
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
-
   await audioContext.resume();
 
   const source = audioContext.createMediaElementSource(video);
   source.connect(audioContext.destination);
 
-  status.innerText = "Status: ✅ Audio capture ACTIVE (AI ready)";
+  // Speech Recognition
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  recognition = new SpeechRecognition();
+  recognition.lang = "ja-JP"; // Japanese
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onresult = (event) => {
+    let transcript = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    document.getElementById("liveText").innerText = transcript;
+  };
+
+  recognition.start();
+
+  status.innerText =
+    "Status: ✅ Audio capture + Japanese speech recognition ACTIVE";
 });
 </script>
 
-</body>
-</html>
