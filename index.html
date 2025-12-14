@@ -3,13 +3,11 @@
 <head>
   <title>Real-time AI Video Player</title>
 </head>
+
 <body>
 
 <h2>AI Video Player (Prototype)</h2>
 
-<video id="video" controls width="600">
-  <source src="sample.mp4" type="video/mp4">
-</video>
 <video id="video" controls width="600">
   <source src="sample.mp4" type="video/mp4">
 </video>
@@ -19,14 +17,23 @@
 <button id="btn">Start Audio Capture</button>
 
 <p id="status">Status: Waiting</p>
+
 <h3>Live Japanese Text:</h3>
 <div id="liveText" style="border:1px solid #ccc; padding:10px; width:600px;">
 Waiting for speech...
+</div>
+
+<h3>Hindi Translation:</h3>
+<div id="hindiText" style="border:1px solid #4caf50; padding:10px; width:600px;">
+Waiting for translation...
+</div>
 
 <script>
 const btn = document.getElementById("btn");
 const status = document.getElementById("status");
 const video = document.getElementById("video");
+const liveText = document.getElementById("liveText");
+const hindiText = document.getElementById("hindiText");
 
 let recognition;
 
@@ -36,7 +43,7 @@ btn.addEventListener("click", async () => {
     return;
   }
 
-  // Audio capture
+  // Audio Context (browser requirement)
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
   await audioContext.resume();
@@ -58,7 +65,24 @@ btn.addEventListener("click", async () => {
     for (let i = event.resultIndex; i < event.results.length; i++) {
       transcript += event.results[i][0].transcript;
     }
-    document.getElementById("liveText").innerText = transcript;
+
+    liveText.innerText = transcript;
+
+    // Demo Japanese → Hindi mapping (FREE)
+    const hindiMap = {
+      "こんにちは": "नमस्ते",
+      "ありがとう": "धन्यवाद",
+      "ドラえもん": "डोरेमॉन",
+      "はい": "हाँ",
+      "いいえ": "नहीं"
+    };
+
+    let translated = transcript;
+    Object.keys(hindiMap).forEach(jp => {
+      translated = translated.replace(jp, hindiMap[jp]);
+    });
+
+    hindiText.innerText = translated;
   };
 
   recognition.start();
@@ -68,3 +92,5 @@ btn.addEventListener("click", async () => {
 });
 </script>
 
+</body>
+</html>
